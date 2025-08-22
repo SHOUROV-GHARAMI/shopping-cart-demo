@@ -1,44 +1,43 @@
+// Cart state
 let cart = [];
+let appliedPromo = null; // Track if promo is used
 
 // Add product to cart
 function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+const product = products.find(p => p.id === productId);
+const item = cart.find(i => i.id === productId);
 
-    const cartItem = cart.find(item => item.id === productId);
-    if (cartItem) {
-        cartItem.quantity++;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-
-    updateCartUI();
+if (item) {
+    item.quantity++;
+} else {
+    cart.push({ ...product, quantity: 1 });
 }
 
-// Remove product from cart
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    updateCartUI();
+updateCartUI();
 }
 
 // Update quantity
-function updateQuantity(productId, quantity) {
-    const cartItem = cart.find(item => item.id === productId);
-    if (cartItem && quantity > 0) {
-        cartItem.quantity = quantity;
-    } else if (cartItem && quantity <= 0) {
-        removeFromCart(productId);
+function updateQuantity(productId, newQty) {
+const item = cart.find(i => i.id === productId);
+if (item) {
+    if (newQty <= 0) {
+    cart = cart.filter(i => i.id !== productId);
+    } else {
+    item.quantity = newQty;
     }
-    updateCartUI();
+}
+updateCartUI();
 }
 
 // Clear cart
 function clearCart() {
-    cart = [];
-    updateCartUI();
+cart = [];
+appliedPromo = null;
+document.getElementById("discounted-total").classList.add("hidden");
+updateCartUI();
 }
 
 // Calculate total
 function calculateTotal() {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
